@@ -1,44 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="81897f77-e628-471c-ac13-02fb10c3ae9b" >
+    <apikit:config name="fibonacci-api-config" api="fibonacci-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5a092548-98f5-4436-972c-2cd040b516dc" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
-	<flow name="fibonacci-apiFlow" doc:id="0725938f-1173-4e26-94a2-316ecadca2f6" >
-		<http:listener doc:name="Listener" doc:id="0ffdd910-571c-4993-b790-09d3d92e9009" config-ref="HTTP_Listener_config" path="/fib/{number}"/>
-		<set-variable value='#[attributes.headers.host default "127.0.0.1:8081"]' doc:name="Host" doc:id="7fe13f60-859f-4c3c-bc45-6db7154d2fc3" variableName="host"/>
-		<set-variable value="#[attributes.uriParams.number as Number]" doc:name="Number" doc:id="21fdfe28-41d4-4f22-8458-cbf1f148e762" variableName="number"/>
-		<logger level="INFO" doc:name="Logger" doc:id="8542e9ac-3bbe-4362-80fd-fd02e1d676fd" message='#["Number: " ++ vars.number ++ ", Host: " ++ vars.host]' />
-		<choice doc:name="Fib(n)" doc:id="a8f136ce-f2bc-4230-85d2-7c53df76bf04" >
-			<when expression="#[vars.number == 0]">
-				<set-variable value="0" doc:name="Fib(0) = 0" doc:id="fc35a1f9-70a5-4dc7-9546-c67c1968bc56" variableName="result"/>
-			</when>
-			<when expression="#[vars.number == 1]">
-				<set-variable value="1" doc:name="Fib(1) = 1" doc:id="3e6c46b4-c6d7-431a-b595-261818de3e81" variableName="result"/>
-			</when>
-			<otherwise >
-				<http:request method="GET" doc:name="Fib(N-1)" doc:id="09c36b1d-f276-4d81-bada-4292950b7937" url='#["http://" ++ vars.host ++ "/fib/{number}"]' target="n1" targetValue="#[payload.result as Number]">
-					<http:uri-params ><![CDATA[#[output application/java
+	<flow name="fibonacci-api-main">
+        <http:listener path="/api/*" config-ref="HTTP_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="fibonacci-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
-{
-	"number" : (vars.number-1) as Number
-}]]]></http:uri-params>
-				</http:request>
-				<http:request method="GET" doc:name="Fib(N-2)" doc:id="d332c20e-27bc-43a5-87ac-3adc3b31edf4" url='#["http://" ++ vars.host ++ "/fib/{number}"]' target="n2" targetValue="#[payload.result as Number]">
-					<http:uri-params ><![CDATA[#[output application/java
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
-{
-	"number" : (vars.number-2) as Number
-}]]]></http:uri-params>
-				</http:request>
-				<set-variable value="#[vars.n1 + vars.n2]" doc:name="N1 + N2" doc:id="f5c93281-7b05-4be3-980a-361bbc9a190f" variableName="result"/>
-			</otherwise>
-		</choice>
-		<ee:transform doc:name="Transform Message" doc:id="96be789d-54a8-42cb-a782-a9d21feec88f" >
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="fibonacci-api-console">
+        <http:listener path="/console/*" config-ref="HTTP_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="fibonacci-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\fib\(number):fibonacci-api-config">
+		<set-variable value='#[attributes.headers.host default "127.0.0.1:8081"]' doc:name="Set Host" doc:id="ad4d424e-fa8b-4d71-bad5-7b6c9f122f2e" variableName="host"/>
+		<set-variable value="#[attributes.uriParams.number as Number]" doc:id="643f1a54-b94e-4e71-ac00-9b8066f1e897" variableName="number" doc:name="Set Number"/>
+        <logger level="INFO" doc:name="Track call information" doc:id="810c08a3-73a0-4027-ac44-eae049a6e442" message='#["Number: " ++ vars.number ++ ", Host: " ++ vars.host]'/>
+		<flow-ref doc:name="Call Fibonacci function" doc:id="e6bea9eb-427a-482f-ae8e-9552d29411a1" name="fibonacci-function"/>
+		<ee:transform doc:name="Return result" doc:id="be231316-74c6-4134-9510-51c0638846df" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -48,5 +139,5 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	</flow>
+    </flow>
 </mule>

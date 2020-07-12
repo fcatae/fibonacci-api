@@ -1,0 +1,20 @@
+#%RAML 1.0
+title: Fibonacci API
+version: v1
+mediaType: 
+  - application/json
+
+/fib/{number}:
+  uriParameters:
+    number:      
+      required: true
+      example: "6"
+
+  get:
+    responses:
+      200:
+        body:
+          properties:
+            result: number
+          example: { "result": 8 }
+          
