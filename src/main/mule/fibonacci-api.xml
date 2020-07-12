@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<set-variable value='#[attributes.headers.host default "127.0.0.1:8081"]' doc:name="Host" doc:id="7fe13f60-859f-4c3c-bc45-6db7154d2fc3" variableName="host"/>
 		<set-variable value="#[attributes.uriParams.number as Number]" doc:name="Number" doc:id="21fdfe28-41d4-4f22-8458-cbf1f148e762" variableName="number"/>
 		<logger level="INFO" doc:name="Logger" doc:id="8542e9ac-3bbe-4362-80fd-fd02e1d676fd" message='#["Number: " ++ vars.number ++ ", Host: " ++ vars.host]' />
-		<choice doc:name="Choice" doc:id="a8f136ce-f2bc-4230-85d2-7c53df76bf04" >
+		<choice doc:name="Fib(n)" doc:id="a8f136ce-f2bc-4230-85d2-7c53df76bf04" >
 			<when expression="#[vars.number == 0]">
 				<set-variable value="0" doc:name="Fib(0) = 0" doc:id="fc35a1f9-70a5-4dc7-9546-c67c1968bc56" variableName="result"/>
 			</when>
