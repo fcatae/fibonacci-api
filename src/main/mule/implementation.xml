@@ -5,6 +5,7 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6588dd9f-7740-4b22-beeb-989d31510aa0" enableCookies="false" responseTimeout="60000" />
 	<flow name="fibonacci-function" doc:id="0725938f-1173-4e26-94a2-316ecadca2f6" >
 		<choice doc:name="Fib(n)" doc:id="a8f136ce-f2bc-4230-85d2-7c53df76bf04" >
 			<when expression="#[vars.number == 0]">
@@ -14,14 +15,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<set-variable value="1" doc:name="Fib(1) = 1" doc:id="3e6c46b4-c6d7-431a-b595-261818de3e81" variableName="result"/>
 			</when>
 			<otherwise >
-				<http:request method="GET" doc:name="Fib(N-1)" doc:id="09c36b1d-f276-4d81-bada-4292950b7937" url='#[vars.baseUrl ++ "/fib/{number}"]' target="n1" targetValue="#[payload.result as Number]">
+				<http:request method="GET" doc:name="Fib(N-1)" doc:id="09c36b1d-f276-4d81-bada-4292950b7937" url='#[vars.baseUrl ++ "/fib/{number}"]' target="n1" targetValue="#[payload.result as Number]" config-ref="HTTP_Request_configuration">
 					<http:uri-params ><![CDATA[#[output application/java
 ---
 {
 	"number" : (vars.number-1) as Number
 }]]]></http:uri-params>
 				</http:request>
-				<http:request method="GET" doc:name="Fib(N-2)" doc:id="d332c20e-27bc-43a5-87ac-3adc3b31edf4" url='#[vars.baseUrl ++ "/fib/{number}"]' target="n2" targetValue="#[payload.result as Number]">
+				<http:request method="GET" doc:name="Fib(N-2)" doc:id="d332c20e-27bc-43a5-87ac-3adc3b31edf4" url='#[vars.baseUrl ++ "/fib/{number}"]' target="n2" targetValue="#[payload.result as Number]" config-ref="HTTP_Request_configuration">
 					<http:uri-params ><![CDATA[#[output application/java
 ---
 {
