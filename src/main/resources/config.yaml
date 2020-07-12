@@ -1,2 +1,3 @@
+appid: "0"
 tenants:
-  appid: "0"
+  default: "http://fibonacci-api.us-e2.cloudhub.io/api"
