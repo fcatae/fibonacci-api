@@ -128,7 +128,7 @@ output application/json
     <flow name="get:\fib\(number):fibonacci-api-config">
 		<set-variable value='#["http://" ++ (attributes.headers.host default "127.0.0.1") ++ "/api"]' doc:name="Set BaseUrl" doc:id="d1dc981c-6fd7-4b80-ae8a-c4cb72d66ad2" variableName="baseUrl"/>
 		<set-variable value="#[attributes.uriParams.number as Number]" doc:id="643f1a54-b94e-4e71-ac00-9b8066f1e897" variableName="number" doc:name="Set Number"/>
-        <logger level="INFO" doc:name="Track call information" doc:id="810c08a3-73a0-4027-ac44-eae049a6e442" message='#["Number: " ++ vars.number]'/>
+		<logger level="INFO" doc:name="Track call information" doc:id="810c08a3-73a0-4027-ac44-eae049a6e442" message='#[attributes]' />
 		<flow-ref doc:name="Call Fibonacci function" doc:id="e6bea9eb-427a-482f-ae8e-9552d29411a1" name="fibonacci-function"/>
 		<ee:transform doc:name="JSON Result" doc:id="be231316-74c6-4134-9510-51c0638846df" >
 			<ee:message >
