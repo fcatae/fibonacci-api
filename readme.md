@@ -22,6 +22,9 @@ A definição é feita, portanto, da seguinte forma:
 - F<sub>1</sub> = 1
 - F<sub>n</sub> = F<sub>n-1</sub> + F<sub>n-2</sub>
 
+Assim, é possível determinar os próximos números da sequência: 21, 34, 55, ...
+
+
 
 ## Implementação
 
@@ -36,7 +39,7 @@ O resultado é gerado na forma:
 
 ```json
 {
-    "result": <<RESULTADO>>
+    "result": Number
 }
 ```
 
