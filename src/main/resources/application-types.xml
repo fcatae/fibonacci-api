@@ -15,6 +15,7 @@ type: integer]]></types:shape>
       <types:input-event>
         <types:variables>
           <types:variable name="number" type="number"/>
+          <types:variable name="baseUrl" type="string"/>
           <types:variable name="host" type="string"/>
         </types:variables>
       </types:input-event>

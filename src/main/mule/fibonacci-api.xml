@@ -5,6 +5,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
     <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5a092548-98f5-4436-972c-2cd040b516dc" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="40ef6517-3a6e-49b7-9cb0-6bc78f23f5aa" file="config.yaml" />
 	<flow name="fibonacci-api-main">
         <http:listener path="/api/*" config-ref="HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -125,7 +126,9 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\fib\(number):fibonacci-api-config">
-		<set-variable value='#[attributes.headers.host default "127.0.0.1:8081"]' doc:name="Set Host" doc:id="ad4d424e-fa8b-4d71-bad5-7b6c9f122f2e" variableName="host"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c5a70737-8038-4577-8cc3-65d812831d73" message="#[attributes]"/>
+		<set-variable value='#[attributes.headers.host default "127.0.0.1"]' doc:name="Set Host" doc:id="ad4d424e-fa8b-4d71-bad5-7b6c9f122f2e" variableName="host"/>
+		<set-variable value="/api" doc:name="Set BaseUrl" doc:id="d1dc981c-6fd7-4b80-ae8a-c4cb72d66ad2" variableName="baseUrl"/>
 		<set-variable value="#[attributes.uriParams.number as Number]" doc:id="643f1a54-b94e-4e71-ac00-9b8066f1e897" variableName="number" doc:name="Set Number"/>
         <logger level="INFO" doc:name="Track call information" doc:id="810c08a3-73a0-4027-ac44-eae049a6e442" message='#["Number: " ++ vars.number ++ ", Host: " ++ vars.host]'/>
 		<flow-ref doc:name="Call Fibonacci function" doc:id="e6bea9eb-427a-482f-ae8e-9552d29411a1" name="fibonacci-function"/>
