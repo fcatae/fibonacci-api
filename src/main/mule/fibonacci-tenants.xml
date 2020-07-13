@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	
-    <api-gateway:autodiscovery apiId="${appid}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c0e557d4-3794-4281-aeaa-bd727b262705" flowRef="fibonacci-tenants" />
+    <api-gateway:autodiscovery apiId="${tenant_appid}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c0e557d4-3794-4281-aeaa-bd727b262705" flowRef="fibonacci-tenants" />
 	<flow name="fibonacci-tenants">
 		<http:listener doc:name="Listener" doc:id="716d43b0-7064-461d-81f1-60ccaf8497a2" config-ref="HTTP_Listener_config" path="/users/{tenant}/fib/{number}"/>
 		<set-variable value='#[attributes.uriParams.tenant default ""]' doc:name="Set Tenant" doc:id="20291b59-e83c-4d1d-b738-f2465b7cfc31" variableName="tenant"/>

@@ -50,7 +50,7 @@ Os resultados podem ser simulados diretamente a partir do API Console.
 O console está disponível em `http://localhost:8081/console`.
 
 
-## Problema
+## Desafio
 
 Notamos que o app utilizou um mecanismo que demanda bastante recurso para
 calcular uma simples série de Fibonacci. Existe um momento em que se atinge
@@ -64,6 +64,9 @@ o limite e a API retorna um erro HTTP 500.
 | fib(20) = 6765 | fib(25) = ??? |
 | ![](docs/api-console-fib20.png) | ![](docs/api-console-fib25.png) | 
 
+Existe uma forma de corrigir o código para não consumir tanto recurso.
+No entanto, o desafio é saber se existe uma forma de melhorar o desempenho
+da aplicação sem alteração no código.
 
 ## Referências
 
