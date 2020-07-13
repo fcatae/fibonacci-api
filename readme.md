@@ -43,6 +43,27 @@ O resultado é gerado na forma:
 }
 ```
 
+Os resultados podem ser simulados diretamente a partir do API Console.
+
+![](docs/api-console.png)
+
+O console está disponível em `http://localhost:8081/console`.
+
+
+## Problema
+
+Notamos que o app utilizou um mecanismo que demanda bastante recurso para
+calcular uma simples série de Fibonacci. Existe um momento em que se atinge
+o limite e a API retorna um erro HTTP 500.
+
+| fib(1) = 1 | fib(5) = 5 |
+|:----:|:----:|
+| ![](docs/api-console-fib1.png)  | ![](docs/api-console-fib5.png)  |
+| fib(10) = 55 | fib(15) = 610 |
+| ![](docs/api-console-fib10.png) | ![](docs/api-console-fib15.png) | 
+| fib(20) = 6765 | fib(25) = ??? |
+| ![](docs/api-console-fib20.png) | ![](docs/api-console-fib25.png) | 
+
 
 ## Referências
 
