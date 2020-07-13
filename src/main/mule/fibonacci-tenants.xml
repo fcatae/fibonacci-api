@@ -15,6 +15,11 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 		<set-variable value="#[fun defaultUrl(host, tenant) = &quot;http://&quot; ++ (host default &quot;localhost:8081&quot;) ++ &quot;/users/&quot; ++ tenant
 ---
 p('tenants.' ++ vars.tenant) default defaultUrl(attributes.headers.host, vars.tenant)]" doc:name="Set BaseUrl" doc:id="6a4acc14-95f8-404d-907e-43bde0c0b5af" variableName="baseUrl"/>
+		<set-variable value='#[{
+	client_id: attributes.headers.client_id default "",
+	client_secret: attributes.headers.client_secret default "",
+	authorization: attributes.headers.authorization default ""
+}]' doc:name="Set Credentials" doc:id="da5e1636-aa34-4938-b3bc-35ed237d2021" variableName="credentials" />
 		<set-variable value="#[attributes.uriParams.number as Number]" doc:id="9c33e7ef-82fa-48b9-a1a8-04dd1b473456" variableName="number" doc:name="Set Number"/>
 		<set-variable value="#[now()]" doc:name="Log Start Call (startTime)" doc:id="79729595-3f15-434b-8e4d-2373c560727f" variableName="startTime"/>
 		<flow-ref doc:name="Call Fibonacci function" doc:id="74c185f2-5ad4-453f-b7af-57e942b4eb1c" name="fibonacci-function"/>

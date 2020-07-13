@@ -16,6 +16,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			</when>
 			<otherwise >
 				<http:request method="GET" doc:name="Fib(N-1)" doc:id="09c36b1d-f276-4d81-bada-4292950b7937" url='#[vars.baseUrl ++ "/fib/{number}"]' target="n1" targetValue="#[payload.result as Number]" config-ref="HTTP_Request_configuration">
+					<http:headers ><![CDATA[#[vars.credentials]]]></http:headers>
 					<http:uri-params ><![CDATA[#[output application/java
 ---
 {
@@ -23,6 +24,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 }]]]></http:uri-params>
 				</http:request>
 				<http:request method="GET" doc:name="Fib(N-2)" doc:id="d332c20e-27bc-43a5-87ac-3adc3b31edf4" url='#[vars.baseUrl ++ "/fib/{number}"]' target="n2" targetValue="#[payload.result as Number]" config-ref="HTTP_Request_configuration">
+					<http:headers ><![CDATA[#[vars.credentials]]]></http:headers>
 					<http:uri-params ><![CDATA[#[output application/java
 ---
 {
