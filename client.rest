@@ -1,0 +1,4 @@
+GET http://localhost:8081/users/a/fib/2
+
+###
+GET http://fibonacci-api.us-e2.cloudhub.io/users/a/fib/1
